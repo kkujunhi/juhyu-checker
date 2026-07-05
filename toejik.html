@@ -163,6 +163,13 @@
         <p>퇴직금을 개인형 퇴직연금(IRP) 계좌로 받으면 당장 떼는 세금을 미루는 등 세제 혜택을 받을 수 있습니다. 목돈인 만큼 수령 방식에 따라 세금이 달라질 수 있으니 미리 알아보는 것이 유리합니다.</p>
       </section>
 
+      <section>
+        <h2>회사가 퇴직연금에 가입돼 있다면?</h2>
+        <p>요즘은 많은 회사가 퇴직금을 회사 금고가 아니라 '퇴직연금'이라는 외부 금융상품으로 따로 적립해 둡니다. 퇴직연금에 가입된 회사라면, 퇴직할 때 이 계산기가 보여주는 법정 퇴직금 공식과 실제로 받는 금액이 다를 수 있습니다.</p>
+        <p>퇴직연금은 크게 DB형(확정급여형)과 DC형(확정기여형)으로 나뉩니다. DB형은 대체로 법정 퇴직금과 비슷한 금액을 보장하지만, DC형은 회사가 매년 적립해 준 돈을 근로자가 직접 운용하기 때문에 그 운용 수익에 따라 최종 수령액이 늘거나 줄 수 있습니다. 즉 DC형은 이 계산기의 값과 차이가 날 가능성이 더 큽니다.</p>
+        <p>내 회사가 퇴직연금에 가입했는지, 가입했다면 어떤 유형인지는 회사의 급여·인사 담당자에게 직접 물어보는 것이 가장 정확합니다. 또는 금융감독원 '통합연금포털'에서 내 퇴직연금 가입 내역과 적립금을 직접 조회할 수 있으니, 정확한 예상 수령액이 궁금하다면 함께 확인해 보세요.</p>
+      </section>
+
       <p class="law-ref">
         근거 법령: <strong>근로자퇴직급여 보장법 제4조·제8조·제9조</strong>.
         사용자는 계속근로기간 1년 이상, 4주 평균 1주 소정근로시간 15시간 이상인 근로자가 퇴직하면
@@ -219,7 +226,8 @@
         help: "4주를 평균한 1주 근무시간이에요. (예: 하루 4시간 × 주 4일 = 16시간)",
         answers: [
           { label: "네, 15시간 이상이에요", em: "✅", value: "y" },
-          { label: "아니요, 15시간 미만이에요", em: "🚫", value: "n" }
+          { label: "아니요, 15시간 미만이에요", em: "🚫", value: "n" },
+          { label: "잘 모르겠어요 (주마다 들쭉날쭉해요)", em: "🤔", value: "unsure" }
         ]
       },
       {
@@ -275,6 +283,18 @@
             "정확한 재직일수는 아래 계산기로 확인하고, 애매하면 <b>고용노동부 1350</b> 상담을 받아보세요.";
         }
       },
+      maybe_hours: {
+        cls: "maybe", emoji: "🤔", verdict: "애매해요",
+        copy: "내 퇴직금은 좀 애매한 케이스래.", showCalc: true,
+        reason: function () {
+          return "근무시간이 <span class='accent-maybe'>주마다 들쭉날쭉해서</span> 주 15시간 조건이 애매한 경우예요." +
+            "<ul>" +
+            "<li>퇴직금은 <b>4주를 평균</b>한 1주 소정근로시간이 15시간 이상이어야 대상이 돼요. 어떤 주는 넘고 어떤 주는 모자라더라도, 평균이 15시간 이상이면 대상이 될 수 있어요.</li>" +
+            "<li>계약서에 정한 근무시간과 실제 근무한 시간을 4주 단위로 계산해보면 판단에 도움이 돼요.</li>" +
+            "</ul>" +
+            "이런 경우는 <b>계속근로 인정 여부와 평균시간 계산</b>에 따라 달라지니, <b>고용노동부 1350</b> 상담을 받아보시길 권해요.";
+        }
+      },
       maybe_break: {
         cls: "maybe", emoji: "🤔", verdict: "애매해요",
         copy: "내 퇴직금은 좀 애매한 케이스래.", showCalc: true,
@@ -293,6 +313,7 @@
       if (a[0] === "n") return VERDICTS.no_year;
       if (a[1] === "n") return VERDICTS.no_hours;
       if (a[0] === "close") return VERDICTS.maybe_close;
+      if (a[1] === "unsure") return VERDICTS.maybe_hours;
       if (a[2] === "broke") return VERDICTS.maybe_break;
       return VERDICTS.yes;
     }
@@ -338,7 +359,7 @@
       answers[current] = value;
       // 조기 종료
       if (current === 0 && value === "n") { showResult(); return; }
-      if (current === 1 && value === "n") { showResult(); return; }
+      if (current === 1 && (value === "n" || value === "unsure")) { showResult(); return; }
       if (current < QUESTIONS.length - 1) { current++; renderQuestion(); }
       else showResult();
     }
